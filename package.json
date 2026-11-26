@@ -1,0 +1,35 @@
+{
+  "name": "pal-one",
+  "private": true,
+  "version": "0.2.0",
+  "description": "PAL-ONE — All Palestinian Digital Services. One Place.",
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c green,cyan \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w frontend && npm run build -w backend",
+    "start": "npm run start -w backend",
+    "test": "npm run test -w backend",
+    "typecheck": "npm run typecheck -w frontend && npm run typecheck -w backend",
+    "db:generate": "npm run db:generate -w backend",
+    "db:migrate": "npm run db:migrate -w backend",
+    "db:deploy": "npm run db:deploy -w backend",
+    "db:status": "npm run db:status -w backend",
+    "db:seed": "npm run db:seed -w backend",
+    "db:setup": "npm run db:setup -w backend",
+    "db:studio": "npm run db:studio -w backend",
+    "db:reset": "npm run db:reset -w backend",
+    "admin:create": "npm run admin:create -w backend --"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}

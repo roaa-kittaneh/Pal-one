@@ -1,0 +1,35 @@
+# Dependencies & build output
+node_modules
+frontend/dist
+backend/dist
+coverage
+*.tsbuildinfo
+
+# Environment & secrets (copy .env.example → .env)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# SQLite databases (dev data stays local; recreate with `npm run db:setup`)
+database/*.db
+database/*.db-journal
+database/*.db-wal
+database/*.db-shm
+database/.test-*.db*
+*.sqlite
+*.sqlite3
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea

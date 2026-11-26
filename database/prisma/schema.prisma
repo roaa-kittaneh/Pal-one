@@ -1,0 +1,146 @@
+// PAL-ONE database schema (SQLite via Prisma).
+//
+// SQLite has no native enum / array types, so constrained values
+// (icon, tint, serviceType, location, status, role, language) are stored as
+// TEXT and validated by Zod in the API layer (see backend/src/validators and shared/constants.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  nameAr        String
+  nameEn        String
+  descriptionAr String
+  descriptionEn String
+  /// Short line under the name on cards ("Banking & digital wallets").
+  taglineAr     String   @default("")
+  taglineEn     String   @default("")
+  /// Hero headline on the category results page.
+  headlineAr    String   @default("")
+  headlineEn    String   @default("")
+  /// Icon key understood by the frontend (finance, education, telecom, …).
+  icon          String
+  /// Hero background tint key (mist, lavender, sky, sand, blush, mint).
+  tint          String   @default("mist")
+  image         String?
+  sortOrder     Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subcategories Subcategory[]
+  services      Service[]
+
+  @@index([isActive, sortOrder])
+}
+
+model Subcategory {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  nameAr        String
+  nameEn        String
+  descriptionAr String   @default("")
+  descriptionEn String   @default("")
+  sortOrder     Int      @default(0)
+  categoryId    Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  services Service[]
+
+  @@index([categoryId, sortOrder])
+}
+
+model Service {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  nameAr        String
+  nameEn        String
+  descriptionAr String
+  descriptionEn String
+  logo          String?
+  categoryId    Int
+  subcategoryId Int?
+  /// website | mobile-app | website-and-app
+  serviceType   String
+  /// nationwide | jerusalem | ramallah | … (see shared/constants.ts)
+  location      String
+  /// Official links stay NULL until confirmed with the provider.
+  officialWebsite String?
+  googlePlayUrl   String?
+  appStoreUrl     String?
+  contactEmail    String?
+  contactPhone    String?
+  isFeatured    Boolean  @default(false)
+  isVerified    Boolean  @default(false)
+  /// Marks seed / sample content so it can be filtered or purged later.
+  isDemo        Boolean  @default(false)
+  /// draft | published | archived — only "published" is visible publicly.
+  status        String   @default("draft")
+  /// Curated order used by the "recommended" sort.
+  sortOrder     Int      @default(0)
+  /// Normalized (lower-cased, Arabic-folded) text of names, descriptions,
+  /// category and subcategory names. Built by shared/search.ts (seed + backend/src/services/searchIndex.service.ts).
+  searchText    String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category    Category           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategory Subcategory?       @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  languages   ServiceLanguage[]
+  highlights  ServiceHighlight[]
+
+  @@index([status, categoryId])
+  @@index([status, subcategoryId])
+  @@index([status, isFeatured])
+  @@index([status, createdAt])
+  @@index([status, location])
+}
+
+/// Languages a service is offered in (ar, en).
+model ServiceLanguage {
+  serviceId Int
+  language  String
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([serviceId, language])
+}
+
+/// "What you can explore" bullet points on the service detail page.
+model ServiceHighlight {
+  id        Int    @id @default(autoincrement())
+  serviceId Int
+  position  Int    @default(0)
+  titleAr   String
+  titleEn   String
+  textAr    String
+  textEn    String
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId, position])
+}
+
+/// Administrators for the future protected admin area.
+/// Never selected by public endpoints.
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  /// scrypt hash: "scrypt$<N>$<salt b64>$<hash b64>"
+  passwordHash String
+  /// admin | editor
+  role         String   @default("editor")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

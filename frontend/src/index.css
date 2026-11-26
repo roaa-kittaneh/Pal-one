@@ -1,0 +1,86 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Values are sampled from the Figma screenshots (forest / sage /
+ * lime palette), anchored on the brand neutrals from the brief
+ * (#F5F8F6, #E2EFE7, #24303A, #677580, #80A995, #40855E).
+ */
+@theme {
+  --font-sans: 'Inter', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Manrope', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: 'IBM Plex Sans Arabic', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --color-forest: #263f37; /* dark surfaces: footer, hero card, detail hero */
+  --color-forest-soft: #2f4c42;
+  --color-pine: #2f5a45; /* primary buttons */
+  --color-pine-hover: #40855e; /* Dark Sage Green */
+  --color-sage: #80a995; /* Soft Sage Green */
+  --color-heading: #1f3a31;
+  --color-ink: #24303a; /* Main Text */
+  --color-muted: #677580; /* Secondary Text */
+  --color-paper: #f6f7f3; /* page background */
+  --color-offwhite: #f5f8f6;
+  --color-mist: #e6ece3; /* hero / soft panels */
+  --color-mint: #e2efe7; /* Light Mint */
+  --color-chip: #e8eee6; /* icon chips, active filter */
+  --color-line: #e3e7e1;
+  --color-lime: #e1eda2;
+  --color-lime-ink: #d8e99c;
+  --color-lavender: #ebe9f4;
+  --color-sand: #f1ece0;
+  --color-sky: #e3ecf1;
+  --color-blush: #f3e6e3;
+
+  --shadow-card: 0 1px 2px rgb(31 58 49 / 0.04), 0 1px 1px rgb(31 58 49 / 0.03);
+  --shadow-card-hover: 0 10px 24px -12px rgb(31 58 49 / 0.18);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    overflow-x: hidden;
+  }
+  html[lang='ar'] body {
+    font-family: var(--font-arabic);
+  }
+  html[lang='ar'] .font-display {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-pine-hover);
+    outline-offset: 2px;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-14 xl:px-24;
+  }
+  .eyebrow {
+    @apply text-[10px] font-semibold tracking-[0.06em] uppercase sm:text-[11px];
+  }
+  html[lang='ar'] .eyebrow {
+    @apply tracking-normal text-xs;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-pine px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-pine-hover disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 py-2.5 text-sm font-semibold text-heading transition-colors hover:border-sage hover:bg-offwhite;
+  }
+  .field {
+    @apply w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-sage;
+  }
+  /* Flip directional icons (arrows) in RTL */
+  .flip-rtl {
+    @apply rtl:-scale-x-100;
+  }
+}
